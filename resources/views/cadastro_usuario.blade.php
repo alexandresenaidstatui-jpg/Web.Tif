@@ -11,23 +11,17 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @vite(['resources/js/cadastro_usuario.js'])
     <style>
-        :root {
-            --roxo: #8c4dff;
-            --roxo-escuro: #7540e8;
-            --preto: #000000;
-            --branco: #ffffff;
-            --texto: #17121f;
-        }
+        :root { --roxo: #8c4dff; --roxo-escuro: #7540e8; --preto: #09070d; --branco: #fffdf9; --texto: #17121f; --suave: #f3edff; --coral: #ff9478; }
 
         * { box-sizing: border-box; }
 
         body {
             min-height: 100vh;
             margin: 0;
-            padding-top: 34px;
+            padding: 58px 18px 32px;
             color: var(--texto);
-            background: var(--preto);
-            font-family: Arial, Helvetica, sans-serif;
+            background: radial-gradient(circle at 15% 15%, #21133d 0, transparent 34%), var(--preto);
+            font-family: 'Trebuchet MS', Arial, sans-serif;
         }
 
         body::before {
@@ -35,36 +29,45 @@
             top: 0;
             right: 0;
             left: 0;
-            height: 34px;
+            height: 10px;
             background: var(--roxo);
             content: '';
         }
 
-        .container { max-width: 760px; }
+        .container { max-width: 860px; }
+
+        .page-kicker { margin: 0 0 8px; color: var(--coral); font-size: .72rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+
+        .page-intro { max-width: 560px; margin: 0 auto 30px; color: #d6cdea; font-size: .96rem; text-align: center; }
 
         h3 {
-            margin-bottom: 22px !important;
+            margin-bottom: 10px !important;
             color: var(--roxo);
-            font-size: 1.25rem;
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
             font-weight: 700;
         }
 
         .bg-light {
-            padding: 28px !important;
-            border-radius: 9px !important;
+            padding: 34px !important;
+            border: 1px solid rgba(140, 77, 255, .18);
+            border-radius: 18px !important;
             background: var(--branco) !important;
+            box-shadow: 16px 16px 0 rgba(140, 77, 255, .18), 0 24px 55px rgba(0, 0, 0, .28);
         }
 
         label {
             color: var(--texto);
-            font-size: .88rem;
+            margin-bottom: 7px;
+            font-size: .78rem;
+            letter-spacing: .02em;
             font-weight: 600;
         }
 
         .form-control {
-            border: 2px solid transparent;
-            border-radius: 7px;
-            background: #f5efff;
+            min-height: 43px;
+            border: 1px solid #e4d9fa;
+            border-radius: 10px;
+            background: var(--suave);
             color: var(--texto);
         }
 
@@ -75,9 +78,10 @@
         }
 
         .btn-primary {
-            min-width: 150px;
+            min-width: 170px;
+            min-height: 46px;
             border: 0;
-            border-radius: 7px;
+            border-radius: 10px;
             background: var(--roxo);
             font-weight: 700;
         }
@@ -90,15 +94,16 @@
         #cadastro_status { border: 0; font-size: .9rem; }
 
         @media (max-width: 576px) {
-            body { padding-top: 28px; }
-            body::before { height: 28px; }
-            .bg-light { padding: 22px 18px !important; }
+            body { padding-top: 42px; }
+            body::before { height: 10px; }
+            .bg-light { padding: 23px 18px !important; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h3 class="text-center mt-5 mb-4">Cadastro de Usuário</h3>
+        <h3 class="text-center">Crie seu cadastro</h3>
+        <p class="page-intro">Preencha seus dados para acessar o SITE e acompanhar suas solicitações.</p>
         <div class="row justify-content-center">
             <div class="col-lg-8 col-md-10 col-sm-12">
                 <div class="bg-light p-4 rounded">

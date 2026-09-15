@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Usuario;
 use App\Models\TokenUsuario;
 
@@ -19,10 +20,9 @@ class LoginController extends Controller
             'senha' => 'required'
         ]);
 
-        $usuario = Usuario::where('email',"=", $request->email)
-        ->where('senha','=', md5($request->senha))->first();
+        $usuario = Usuario::where('email', $request->email)->first();
 
-        if($usuario){
+        if($usuario && Hash::check($request->senha, $usuario->senha)){
             $token = new TokenUsuario();
             TokenUsuario::where('usuario_id', '=', $usuario->id)->delete();
             $token->usuario_id = $usuario->id;

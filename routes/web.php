@@ -13,3 +13,7 @@ Route::get('/cadastro_usuario', [UsuarioCadastro::class, 'cadastro_usuario_html'
 
 Route::get('/login', [LoginController::class, 'login_html'])
     ->name('login');
+
+Route::get('/mudanca', function () {
+    return view('mudanca');
+})->name('mudanca');

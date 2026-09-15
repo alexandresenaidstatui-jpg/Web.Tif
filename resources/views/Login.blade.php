@@ -14,23 +14,17 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root {
-            --roxo: #8c4dff;
-            --roxo-escuro: #7540e8;
-            --preto: #000000;
-            --branco: #ffffff;
-            --texto: #17121f;
-        }
+        :root { --roxo: #8c4dff; --roxo-escuro: #7540e8; --preto: #09070d; --branco: #fffdf9; --texto: #17121f; --suave: #f3edff; --coral: #ff9478; }
 
         * { box-sizing: border-box; }
 
         body {
             min-height: 100vh;
             margin: 0;
-            padding: 34px 18px 24px;
+            padding: 58px 18px 24px;
             color: var(--texto);
-            background: var(--preto);
-            font-family: Arial, Helvetica, sans-serif;
+            background: radial-gradient(circle at 82% 18%, #2a1948 0, transparent 32%), var(--preto);
+            font-family: 'Trebuchet MS', Arial, sans-serif;
         }
 
         body::before {
@@ -38,29 +32,30 @@
             top: 0;
             right: 0;
             left: 0;
-            height: 34px;
+            height: 10px;
             background: var(--roxo);
             content: '';
         }
 
         .login-card {
-            width: min(100%, 520px);
-            margin: 72px auto 0;
-            padding: 34px;
-            border-radius: 9px;
+            width: min(100%, 480px);
+            margin: 48px auto 0;
+            padding: 42px;
+            border: 1px solid rgba(140, 77, 255, .18);
+            border-radius: 18px;
             background: var(--branco);
-            box-shadow: 18px 18px 0 rgba(140, 77, 255, .35);
+            box-shadow: 16px 16px 0 rgba(140, 77, 255, .2), 0 24px 55px rgba(0, 0, 0, .28);
         }
 
         .login-title {
-            margin: 0 0 8px;
+            margin: 0 0 10px;
             color: var(--roxo);
-            font-size: 1.7rem;
+            font-size: clamp(2rem, 5vw, 2.6rem);
             font-weight: 700;
         }
 
         .login-subtitle {
-            margin: 0 0 28px;
+            margin: 0 0 32px;
             color: #5d536b;
             font-size: .95rem;
         }
@@ -68,9 +63,10 @@
         .form-label { font-weight: 600; }
 
         .form-control {
-            border: 2px solid transparent;
-            border-radius: 7px;
-            background: #f5efff;
+            min-height: 46px;
+            border: 1px solid #e4d9fa;
+            border-radius: 10px;
+            background: var(--suave);
         }
 
         .form-control:focus {
@@ -88,7 +84,8 @@
 
         .btn-primary {
             border: 0;
-            border-radius: 7px;
+            min-height: 46px;
+            border-radius: 10px;
             background: var(--roxo);
             font-weight: 700;
         }
@@ -109,7 +106,7 @@
         @media (max-width: 576px) {
             body { padding-top: 28px; }
             body::before { height: 28px; }
-            .login-card { margin-top: 54px; padding: 24px 20px; }
+            .login-card { margin-top: 34px; padding: 28px 22px; }
         }
     </style>
 </head>
@@ -134,13 +131,53 @@
             <label class="form-check-label" for="lembrar">Lembrar</label>
         </div>
         <button type="button" id="entrar" class="btn btn-primary">Entrar</button>
+        <p id="login-status" class="mt-3 mb-0" role="status" aria-live="polite"></p>
         <br>
         <a class="back-link" href="{{ route('welcome') }}">&#8592; Voltar para boas-vindas</a>
 
     </main>
   
-        
+            <script>
+                const entrar = document.querySelector('#entrar');
+                const status = document.querySelector('#login-status');
 
+                entrar.addEventListener('click', async () => {
+                    const email = document.querySelector('#email').value.trim();
+                    const senha = document.querySelector('#senha').value;
+
+                    if (!email || !senha) {
+                        status.textContent = 'Informe seu email e sua senha.';
+                        status.className = 'mt-3 mb-0 text-danger';
+                        return;
+                    }
+
+                    entrar.disabled = true;
+                    status.textContent = 'Entrando...';
+                    status.className = 'mt-3 mb-0 text-secondary';
+
+                    try {
+                        const response = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ email, senha }),
+                        });
+                        const data = await response.json();
+
+                        if (data.erro !== 'n') {
+                            throw new Error(data.mensagem || 'Email ou senha inválidos.');
+                        }
+
+                        window.location.href = @json(route('mudanca'));
+                    } catch (error) {
+                        status.textContent = error.message;
+                        status.className = 'mt-3 mb-0 text-danger';
+                        entrar.disabled = false;
+                    }
+                });
+            </script>
 </body>
 
 </html>
