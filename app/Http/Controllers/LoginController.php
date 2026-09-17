@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Models\Usuario;
 use App\Models\TokenUsuario;
 
@@ -15,26 +16,42 @@ class LoginController extends Controller
 
     public function login_api(Request $request){
 
-        $request->validate([
-            'email' => 'required',
-            'senha' => 'required'
+        $dados = $request->validate([
+            'email' => 'required|email|max:255',
+            'senha' => 'required|string|min:8',
         ]);
 
-        $usuario = Usuario::where('email', $request->email)->first();
+        $usuario = Usuario::where('email', $dados['email'])->first();
 
-        if($usuario && Hash::check($request->senha, $usuario->senha)){
-            $token = new TokenUsuario();
-            TokenUsuario::where('usuario_id', '=', $usuario->id)->delete();
-            $token->usuario_id = $usuario->id;
-            $token->token = md5($usuario->email . now());
-            $token->valido_ate = now()->addDays(2);
-            $token->save();
-
-            return response()->json(['erro' => 'n','mensagem' => 'Login realizado com sucesso', 'token' => $token->token], 200);
-        } else {
-            return response()->json(['erro' => 's','mensagem' => 'Email ou senha inválidos'], 200);
+        if (!$usuario || !Hash::check($dados['senha'], $usuario->senha)) {
+            return response()->json([
+                'erro' => 's',
+                'mensagem' => 'Email ou senha inválidos.',
+            ], 401);
         }
 
+        try {
+            TokenUsuario::where('usuario_id', $usuario->id)->delete();
 
+            $token = TokenUsuario::create([
+                'usuario_id' => $usuario->id,
+                'token' => Str::random(80),
+                'valido_ate' => now()->addDays(2),
+            ]);
+
+            return response()->json([
+                'erro' => 'n',
+                'mensagem' => 'Login realizado com sucesso.',
+                'token' => $token->token,
+                'data' => ['erro' => 'n'],
+            ], 200);
+        } catch (\Exception $e) {
+            report($e);
+
+            return response()->json([
+                'erro' => 's',
+                'mensagem' => 'Não foi possível iniciar a sessão.',
+            ], 500);
+        }
     }
 }

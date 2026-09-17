@@ -53,8 +53,8 @@
                 <h1>Seja muito bem-vindo.</h1>
                 <p class="intro">Crie seu cadastro para fazer parte da nossa plataforma. É rápido, simples e seus dados ficam organizados em um só lugar.</p>
                 <div class="actions">
-                    <a class="button" href="{{ route('cadastro.usuario') }}">Criar cadastro <span aria-hidden="true">&#8594;</span></a>
-                    <a class="button secondary" href="{{ route('login') }}">Já tenho cadastro</a>
+                    <a class="button" href="{{ route('cadastro.usuario') }}">cadastro aluno <span aria-hidden="true">&#8594;</span></a>
+                    <a class="button secondary" href="{{ route('cadastro.funcionario') }}">cadastro funcionario</a>
                 </div>
             </section>
             <aside class="feature" id="sobre">

@@ -9,6 +9,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/js/cadastro_usuario.js',
+                'resources/js/cadastro_funcionario.js',
                 'resources/js/mudanca.js',
             ],
 
