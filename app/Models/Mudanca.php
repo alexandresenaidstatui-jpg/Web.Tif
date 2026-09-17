@@ -9,6 +9,9 @@ class Mudanca extends Model
     protected $table = 'mudancas';
 
     protected $fillable = [
+        'responsavel_tipo',
+        'origem',
+        'destino',
         'material',
         'justificativa',
     ];

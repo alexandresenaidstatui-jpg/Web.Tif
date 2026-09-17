@@ -92,4 +92,157 @@ class ExampleTest extends TestCase
         ]);
         $this->assertNotEmpty(Funcionario::first()->senha);
     }
+
+    public function test_a_worker_can_log_in_with_one_of_the_registered_subjects(): void
+    {
+        $this->postJson('/api/cadastro-funcionario', [
+            'nome' => 'Carlos Professor',
+            'email' => 'carlos.professor@example.com',
+            'senha' => 'senha-segura',
+            'cpf' => 'REG-002',
+            'materias' => 'Matemática, História',
+            'data_nascimento' => '1985-03-15',
+        ])->assertOk();
+
+        $response = $this->postJson('/api/login-funcionario', [
+            'email' => 'carlos.professor@example.com',
+            'senha' => 'senha-segura',
+            'materia' => 'história',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('erro', 'n')
+            ->assertJsonStructure(['token']);
+
+        $this->assertDatabaseHas('token_funcionario', [
+            'funcionario_id' => Funcionario::where('email', 'carlos.professor@example.com')->value('id'),
+        ]);
+    }
+
+    public function test_a_change_request_saves_origin_and_destination(): void
+    {
+        $response = $this->postJson('/api/mudancas', [
+            'origem' => 'Sala 1',
+            'destino' => 'Sala 4',
+            'material' => 'Notebook',
+            'justificativa' => 'Transferência de equipamento.',
+        ]);
+
+        $response->assertCreated();
+
+        $this->assertDatabaseHas('mudancas', [
+            'origem' => 'Sala 1',
+            'destino' => 'Sala 4',
+            'material' => 'Notebook',
+        ]);
+    }
+
+    public function test_the_changes_page_lists_saved_requests(): void
+    {
+        $this->postJson('/api/mudancas', [
+            'origem' => 'Laboratório',
+            'destino' => 'Biblioteca',
+            'material' => 'Tablet',
+            'justificativa' => 'Aula prática.',
+        ])->assertCreated();
+
+        $this->get('/mudancas-realizadas')
+            ->assertOk()
+            ->assertSee('Laboratório')
+            ->assertSee('Biblioteca')
+            ->assertSee('Tablet')
+            ->assertSee('Aula prática.');
+    }
+
+    public function test_a_change_records_whether_it_was_created_by_a_student(): void
+    {
+        $this->postJson('/api/cadastro_usuario', [
+            'nome' => 'Pedro Aluno',
+            'email' => 'pedro.aluno@example.com',
+            'senha' => 'senha-segura',
+            'cpf' => '111.222.333-44',
+            'data_nascimento' => '2005-06-18',
+        ])->assertOk();
+
+        $login = $this->postJson('/api/login', [
+            'email' => 'pedro.aluno@example.com',
+            'senha' => 'senha-segura',
+        ])->assertOk();
+
+        $this->withHeader('Authorization', 'Bearer '.$login->json('token'))
+            ->postJson('/api/mudancas', [
+                'origem' => 'Sala A',
+                'destino' => 'Sala B',
+                'material' => 'Celular',
+                'justificativa' => 'Troca de sala.',
+            ])
+            ->assertCreated();
+
+        $this->assertDatabaseHas('mudancas', [
+            'responsavel_tipo' => 'aluno',
+            'material' => 'Celular',
+        ]);
+    }
+
+    public function test_a_change_records_whether_it_was_created_by_a_worker(): void
+    {
+        $this->postJson('/api/cadastro-funcionario', [
+            'nome' => 'Fernanda Funcionaria',
+            'email' => 'fernanda.funcionaria@example.com',
+            'senha' => 'senha-segura',
+            'cpf' => 'REG-003',
+            'materias' => 'Geografia',
+            'data_nascimento' => '1987-08-22',
+        ])->assertOk();
+
+        $login = $this->postJson('/api/login-funcionario', [
+            'email' => 'fernanda.funcionaria@example.com',
+            'senha' => 'senha-segura',
+            'materia' => 'Geografia',
+        ])->assertOk();
+
+        $this->withHeader('Authorization', 'Bearer '.$login->json('token'))
+            ->postJson('/api/mudancas', [
+                'origem' => 'Sala C',
+                'destino' => 'Sala D',
+                'material' => 'Tablet',
+                'justificativa' => 'Organização do laboratório.',
+            ])
+            ->assertCreated();
+
+        $this->assertDatabaseHas('mudancas', [
+            'responsavel_tipo' => 'funcionario',
+            'material' => 'Tablet',
+        ]);
+    }
+
+    public function test_a_change_request_can_be_updated_and_deleted(): void
+    {
+        $createResponse = $this->postJson('/api/mudancas', [
+            'origem' => 'Sala antiga',
+            'destino' => 'Sala nova',
+            'material' => 'Celular',
+            'justificativa' => 'Solicitação inicial.',
+        ])->assertCreated();
+
+        $mudancaId = $createResponse->json('mudanca.id');
+
+        $this->put('/mudancas/' . $mudancaId, [
+            'origem' => 'Sala atualizada',
+            'destino' => 'Biblioteca',
+            'material' => 'Tablet',
+            'justificativa' => 'Solicitação corrigida.',
+        ])->assertRedirect(route('mudancas.realizadas'));
+
+        $this->assertDatabaseHas('mudancas', [
+            'id' => $mudancaId,
+            'origem' => 'Sala atualizada',
+            'material' => 'Tablet',
+        ]);
+
+        $this->delete('/mudancas/' . $mudancaId)
+            ->assertRedirect(route('mudancas.realizadas'));
+
+        $this->assertDatabaseMissing('mudancas', ['id' => $mudancaId]);
+    }
 }

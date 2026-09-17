@@ -35,7 +35,7 @@
 </head>
 <body>
     <main class="cadastro-page">
-        <p class="page-kicker">Área exclusiva</p>
+        
         <h1 class="page-title" id="titulo-cadastro">Cadastro de funcionário</h1>
         <p class="page-intro">Informe seus dados profissionais para acessar a plataforma.</p>
         <section class="cadastro-card" aria-labelledby="titulo-cadastro">

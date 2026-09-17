@@ -20,14 +20,23 @@ class loginFuncionario extends Controller
         $dados = $request->validate([
             'email' => 'required|email|max:255',
             'senha' => 'required|string|min:8',
+            'materia' => 'required|string|max:255',
         ]);
 
         $funcionario = Funcionario::where('email', $dados['email'])->first();
+        $materias = $funcionario ? array_map('trim', explode(',', (string) $funcionario->materias)) : [];
+        $materiaValida = collect($materias)->contains(
+            fn (string $materia) => strcasecmp($materia, trim($dados['materia'])) === 0
+        );
 
-        if (!$funcionario || !Hash::check($dados['senha'], $funcionario->senha)) {
+        if (
+            !$funcionario
+            || !Hash::check($dados['senha'], $funcionario->senha)
+            || !$materiaValida
+        ) {
             return response()->json([
                 'erro' => 's',
-                'mensagem' => 'Email ou senha de funcionário inválidos.',
+                'mensagem' => 'Email, senha ou matéria de funcionário inválidos.',
             ], 401);
         }
 

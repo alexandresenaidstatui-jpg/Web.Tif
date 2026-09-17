@@ -19,9 +19,12 @@
         .eyebrow { margin: 0 0 20px; color: var(--roxo); font: 700 .75rem/1 Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; }
         h1 { max-width: 640px; margin: 0; font-size: clamp(3.5rem, 8vw, 7.2rem); font-weight: 400; letter-spacing: -.05em; line-height: .9; }
         .intro { max-width: 470px; margin: 30px 0 34px; color: var(--muted); font: 1.1rem/1.65 Arial, sans-serif; }
-        .actions { display: flex; flex-wrap: wrap; gap: 14px; }
-        .button { display: inline-block; padding: 15px 23px; border: 1px solid var(--roxo); color: var(--cream); background: var(--roxo); font: 700 .9rem Arial, sans-serif; text-decoration: none; transition: transform .2s ease, background .2s ease; }
-        .button:hover { transform: translateY(-3px); background: var(--roxo-escuro); }
+        .actions { display: grid; gap: 16px; max-width: 520px; }
+        .action-row { display: flex; flex-wrap: wrap; gap: 12px; }
+        .action-row + .action-row { padding-top: 2px; border-top: 1px solid rgba(140, 77, 255, .25); }
+        .button { display: inline-flex; min-width: 190px; flex: 1; align-items: center; justify-content: center; padding: 14px 20px; border: 1px solid var(--roxo); border-radius: 4px; color: var(--cream); background: var(--roxo); box-shadow: 4px 4px 0 rgba(140, 77, 255, .28); font: 700 .78rem Arial, sans-serif; letter-spacing: .08em; text-decoration: none; text-transform: uppercase; transition: transform .2s ease, background .2s ease, box-shadow .2s ease; }
+        .button:hover { transform: translate(-2px, -2px); background: var(--roxo-escuro); box-shadow: 6px 6px 0 rgba(140, 77, 255, .35); }
+        .button:focus-visible { outline: 3px solid #cbb5ff; outline-offset: 4px; }
         .button.secondary { color: var(--roxo); background: transparent; }
         .button.secondary:hover { color: var(--cream); }
         .feature { position: relative; min-height: 390px; padding: 42px; border: 0; border-radius: 9px; color: #17121f; background: var(--cream); box-shadow: 18px 18px 0 rgba(140, 77, 255, .35); }
@@ -36,6 +39,8 @@
             body::before { height: 28px; }
             main { display: block; padding-top: 70px; }
             h1 { font-size: clamp(3.4rem, 18vw, 6rem); }
+            .action-row { display: grid; }
+            .button { width: 100%; }
             .feature { min-height: 320px; margin-top: 74px; padding: 30px; }
             .feature-number { margin-bottom: 45px; }
         }
@@ -45,7 +50,6 @@
     <div class="page">
         <nav aria-label="Navegação principal">
             <a class="brand" href="{{ route('welcome') }}">TIF2</a>
-            <a class="nav-link" href="{{ route('cadastro.usuario') }}">Criar cadastro <span aria-hidden="true">&#8594;</span></a>
         </nav>
         <main>
             <section>
@@ -53,8 +57,14 @@
                 <h1>Seja muito bem-vindo.</h1>
                 <p class="intro">Crie seu cadastro para fazer parte da nossa plataforma. É rápido, simples e seus dados ficam organizados em um só lugar.</p>
                 <div class="actions">
-                    <a class="button" href="{{ route('cadastro.usuario') }}">cadastro aluno <span aria-hidden="true">&#8594;</span></a>
-                    <a class="button secondary" href="{{ route('cadastro.funcionario') }}">cadastro funcionario</a>
+                    <div class="action-row">
+                        <a class="button" href="{{ route('cadastro.usuario') }}">cadastro aluno <span aria-hidden="true">&#8594;</span></a>
+                        <a class="button secondary" href="{{ route('cadastro.funcionario') }}">cadastro funcionario</a>
+                    </div>
+                    <div class="action-row">
+                        <a class="button" href="{{ route('login') }}">login aluno <span aria-hidden="true">&#8594;</span></a>
+                        <a class="button secondary" href="{{ route('login.funcionario') }}">login funcionario</a>
+                    </div>
                 </div>
             </section>
             <aside class="feature" id="sobre">

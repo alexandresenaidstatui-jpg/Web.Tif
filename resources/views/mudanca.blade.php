@@ -25,6 +25,7 @@
         .material-select { height: 44px; padding: 0 12px; cursor: pointer; }
         .material-select option { color: var(--ink); background: #fff; }
         .reason-input { min-height: 126px; padding: 12px; resize: vertical; }
+        .location-input { min-height: 44px; height: 44px; resize: none; }
         .reason-input::placeholder { color: #8b7da4; }
         .material-select:focus, .reason-input:focus, .next-button:focus-visible { box-shadow: 0 0 0 3px rgba(140, 77, 255, .3); }
         .next-button { display: flex; align-items: center; justify-content: center; width: 100%; height: 46px; margin: 24px auto 0; padding: 0; border: 0; border-radius: 10px; color: #fff; background: var(--purple); cursor: pointer; }
@@ -45,6 +46,16 @@
                 </svg>
             </a>
             <h1>Quem é você</h1>
+
+            <label class="field" for="origem">
+                <span class="field-label">onde veio</span>
+                <input class="reason-input location-input" id="origem" name="origem" maxlength="255" required placeholder="Informe de onde veio">
+            </label>
+
+            <label class="field" for="destino">
+                <span class="field-label">pra onde vai</span>
+                <input class="reason-input location-input" id="destino" name="destino" maxlength="255" required placeholder="Informe para onde vai">
+            </label>
 
             <label class="field" for="material">
                 <span class="field-label">escolha um bem material</span>

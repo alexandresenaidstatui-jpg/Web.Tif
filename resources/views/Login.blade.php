@@ -170,6 +170,9 @@
                             throw new Error(data.mensagem || 'Email ou senha inválidos.');
                         }
 
+                        localStorage.removeItem('token_funcionario');
+                        localStorage.setItem('tipo_login', 'aluno');
+                        localStorage.setItem('token_usuario', data.token);
                         window.location.href = @json(route('mudanca'));
                     } catch (error) {
                         status.textContent = error.message;
