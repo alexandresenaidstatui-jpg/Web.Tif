@@ -6,11 +6,8 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                'resources/css/app.css',
-                'resources/js/app.js',
-                'resources/js/cadastro_usuario.js',
-                'resources/js/cadastro_funcionario.js',
-                'resources/js/mudanca.js',
+                'resources/css/eco.css',
+                'resources/js/eco.js',
             ],
 
             refresh: true,

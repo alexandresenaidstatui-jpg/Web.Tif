@@ -1,59 +1,181 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Lixeira Inteligente
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplicação web para acompanhar e controlar lixeiras inteligentes. Inclui cadastro e login de usuários, painel de status e API para atualizar as lixeiras.
 
-## About Laravel
+## Requisitos
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2 ou superior
+- Composer
+- Node.js e npm
+- Banco de dados compatível com Laravel, configurado no `.env` (por exemplo, MySQL)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instalação
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Na raiz do projeto, instale as dependências:
 
-## Learning Laravel
+```bash
+composer install
+npm install
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Crie o arquivo de ambiente a partir do exemplo, caso ainda não exista:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+cp .env.example .env
+```
 
-## Laravel Sponsors
+No Windows PowerShell, use:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```powershell
+Copy-Item .env.example .env
+```
 
-### Premium Partners
+Configure no `.env` a conexão do banco (`DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME` e `DB_PASSWORD`). Em seguida, gere a chave da aplicação e execute as migrações:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+php artisan key:generate
+php artisan migrate
+```
 
-## Contributing
+As migrações criam as colunas de telefone e tipo de usuário e inicializam quatro lixeiras: orgânico, metal, plástico e papel. Se já houver usuários cadastrados, os campos antigos de CPF e data de nascimento tornam-se opcionais.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Executar
 
-## Code of Conduct
+Compile os arquivos do frontend:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+npm run build
+```
 
-## Security Vulnerabilities
+Inicie o servidor local:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan serve
+```
 
-## License
+A aplicação fica disponível normalmente em `http://127.0.0.1:8000`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Para acessá-la de outro dispositivo na mesma rede, inicie o servidor aceitando conexões de rede:
+
+```bash
+php artisan serve --host=0.0.0.0 --port=8000
+```
+
+Use o IPv4 do computador anfitrião no outro dispositivo, por exemplo `http://192.168.1.25:8000`. O firewall do sistema pode precisar permitir conexões na porta escolhida. `0.0.0.0` é o endereço de escuta do servidor, não o endereço a ser usado no navegador ou no Postman.
+
+## Telas
+
+- `/cadastro` — cria uma conta com nome, e-mail, senha, telefone e tipo de usuário.
+- `/login` — autentica uma conta existente.
+- `/` — painel autenticado para abrir e fechar lixeiras, conferir o resumo e ver as últimas alterações.
+
+## API
+
+As rotas abaixo usam o prefixo `/api`. No Postman, configure `Accept: application/json`. Para requisições com corpo JSON, configure também `Content-Type: application/json` e selecione **Body → raw → JSON**.
+
+### Criar conta
+
+`POST /api/cadastro_usuario`
+
+```json
+{
+  "nome": "Maria da Silva",
+  "email": "maria@example.com",
+  "senha": "senha12345",
+  "senha_confirmation": "senha12345",
+  "telefone": "(11) 99999-1234",
+  "tipo_usuario": "morador"
+}
+```
+
+`tipo_usuario` aceita `morador` ou `operador`. O e-mail precisa ser único e a senha deve ter pelo menos oito caracteres; `senha_confirmation` deve corresponder a `senha`.
+
+Resposta de sucesso (`200`):
+
+```json
+{
+  "erro": "n",
+  "mensagem": "Cadastro realizado com sucesso.",
+  "data": {
+    "erro": "n"
+  }
+}
+```
+
+### Entrar
+
+`POST /api/login`
+
+```json
+{
+  "email": "maria@example.com",
+  "senha": "senha12345",
+  "lembrar": false
+}
+```
+
+`lembrar` é opcional. Se omitido ou `false`, o token vale dois dias; se `true`, vale trinta dias. A resposta de sucesso contém o token Bearer:
+
+```json
+{
+  "erro": "n",
+  "mensagem": "Login realizado com sucesso.",
+  "token": "TOKEN_RETORNADO_PELA_API",
+  "usuario": {
+    "nome": "Maria da Silva",
+    "tipo_usuario": "morador"
+  },
+  "data": {
+    "erro": "n"
+  }
+}
+```
+
+### Consultar lixeiras
+
+`GET /api/lixeiras`
+
+Requer autenticação. No Postman, em **Authorization**, escolha **Bearer Token** e cole o token retornado pelo login. A resposta inclui o estado atual das lixeiras e até cinco ações recentes.
+
+### Abrir ou fechar uma lixeira
+
+`PATCH /api/lixeiras/{tipo}`
+
+Requer o token Bearer e um corpo JSON com o novo estado. Os tipos disponíveis são `organico`, `metal`, `plastico` e `papel`.
+
+Exemplo para abrir a lixeira de metal:
+
+```http
+PATCH /api/lixeiras/metal
+```
+
+```json
+{
+  "aberta": true
+}
+```
+
+Para fechar, envie `"aberta": false`.
+
+### Sair
+
+`POST /api/logout`
+
+Requer o token Bearer. Invalida o token atual e retorna `204 No Content`.
+
+> Trate tokens como credenciais: não os publique nem os compartilhe. A resposta `"erro": "n"` significa que a operação foi concluída sem erro; `"erro": "s"` indica uma falha.
+
+## Testes
+
+Execute a suíte automatizada com:
+
+```bash
+php artisan test
+```
+
+## Tecnologias
+
+- Laravel 12 e PHP
+- Blade e JavaScript
+- Vite
+- Banco de dados suportado pelo Laravel
