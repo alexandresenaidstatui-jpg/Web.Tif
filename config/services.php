@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'plastico_servo' => [
+        'abrir_url' => env('PLASTICO_SERVO_OPEN_URL', 'http://10.122.41.178/servo/abrir'),
+        'fechar_url' => env('PLASTICO_SERVO_CLOSE_URL', 'http://10.122.41.178/servo/fechar'),
+    ],
+
 ];

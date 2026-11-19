@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -110,6 +112,42 @@ class ExampleTest extends TestCase
             ->assertOk()
             ->assertJsonPath('acoes_recentes.0.nome', 'Metal')
             ->assertJsonPath('acoes_recentes.0.usuario', 'Maria da Silva');
+    }
+
+    public function test_plastic_bin_changes_call_the_servo_url_and_persist_the_state(): void
+    {
+        Http::fake();
+        $token = $this->loginUser();
+
+        $this->withToken($token)->patchJson('/api/lixeiras/plastico', [
+            'aberta' => false,
+        ])->assertOk()->assertJsonPath('lixeira.aberta', false);
+
+        Http::assertSent(fn (Request $request) => $request->url() === config('services.plastico_servo.fechar_url')
+            && $request->method() === 'POST');
+        $this->assertDatabaseHas('lixeiras', [
+            'tipo' => 'plastico',
+            'aberta' => false,
+        ]);
+    }
+
+    public function test_plastic_bin_state_is_not_persisted_when_the_servo_fails(): void
+    {
+        Http::fake([
+            '*' => Http::response([], 503),
+        ]);
+        $token = $this->loginUser();
+
+        $this->withToken($token)->patchJson('/api/lixeiras/plastico', [
+            'aberta' => false,
+        ])->assertStatus(502)->assertJson([
+            'mensagem' => 'O servo da lixeira plástica recebeu a solicitação, mas retornou um erro HTTP.',
+        ]);
+
+        $this->assertDatabaseHas('lixeiras', [
+            'tipo' => 'plastico',
+            'aberta' => true,
+        ]);
     }
 
     private function registerUser(): void
